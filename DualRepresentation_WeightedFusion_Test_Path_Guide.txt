@@ -1,0 +1,172 @@
+Dual-Representation Weighted-Fusion Test: Path and Data-Structure Guide
+
+1. Purpose
+This script evaluates the finalized dual-representation weighted-fusion network
+using paired 1D spectral sequences and 2D recurrence plots (RPs).
+
+The terminal output reports:
+- overall accuracy;
+- female-cocoon accuracy;
+- male-cocoon accuracy;
+- imprinted-dead-cocoon accuracy.
+
+The script also generates a confusion-matrix figure, ROC figure, and optional
+UMAP visualization. Macro precision, macro recall, macro F1 score, individual
+AUC values, and UMAP feature/embedding shapes are not reported in the terminal.
+
+2. Recommended repository structure
+
+<repository>/
+├── DualRepresentation_WeightedFusion_Test.py
+├── data/
+│   ├── Spectral_Sequences/
+│   │   └── TestSet/
+│   │       ├── Day1/
+│   │       │   ├── 0/
+│   │       │   ├── 1/
+│   │       │   └── 2/
+│   │       ├── ...
+│   │       └── Day10/
+│   └── Recurrence_Plots/
+│       └── TestSet/
+│           ├── Day1/
+│           │   ├── 0/
+│           │   ├── 1/
+│           │   └── 2/
+│           ├── ...
+│           └── Day10/
+├── weights/
+│   ├── Optimal_1D-CNN_Weights.pth
+│   ├── Optimal_2D-CNN_Weights.pth
+│   └── DualRepresentation_Weighted-Fusion_Network_Weights.pth
+└── results/
+
+3. Class labels
+0 = Female cocoon
+1 = Male cocoon
+2 = Imprinted-dead cocoon
+
+4. Default paths used by the script
+
+1D spectral-sequence path:
+data/Spectral_Sequences/TestSet
+
+2D recurrence-plot path:
+data/Recurrence_Plots/TestSet
+
+Model-weight path:
+weights
+
+Output path:
+results
+
+All paths are resolved relative to the directory containing the Python script.
+If the script is placed in the repository root shown above, no machine-specific
+absolute path needs to be edited.
+
+5. Pairing rule
+The script pairs a 1D spectrum and a 2D RP only when they are located in the same
+Day folder and class folder and have exactly the same file stem.
+
+Example:
+
+1D:
+data/Spectral_Sequences/TestSet/Day1/0/000001.npy
+
+2D:
+data/Recurrence_Plots/TestSet/Day1/0/000001.npy
+
+These two files are treated as one paired sample. The script stops with an error
+if unmatched 1D or 2D files are detected.
+
+6. Expected input format
+Each 1D spectral file must contain 922 values and have shape (922,) or (1, 922).
+
+Each RP file must have spatial shape 458 x 458 and may be stored as
+(458, 458) or (1, 458, 458).
+
+The released 1D spectra have already been vector-normalized. This evaluation
+script does not apply vector normalization or any other additional spectral
+preprocessing during data loading.
+
+7. Expected test-set distribution
+
+Day1-Day9:
+- Class 0: 36 female cocoon samples per day
+- Class 1: 36 male cocoon samples per day
+- Class 2: 22 imprinted-dead cocoon samples per day
+
+Day10:
+- Class 0: 0 samples
+- Class 1: 0 samples
+- Class 2: 22 imprinted-dead cocoon samples
+
+Total:
+- Female cocoons: 324
+- Male cocoons: 324
+- Imprinted-dead cocoons: 220
+- Total test-set size: 868 paired samples
+
+The script verifies this distribution before model evaluation.
+
+8. Required Python packages
+The evaluation script requires:
+- numpy
+- torch
+- matplotlib
+- scikit-learn
+
+UMAP visualization additionally requires:
+- umap-learn
+
+9. Running the script
+
+With the default repository structure:
+python DualRepresentation_WeightedFusion_Test.py
+
+The default evaluation batch size is 1.
+
+To use a different batch size:
+python DualRepresentation_WeightedFusion_Test.py --batch-size 32
+
+To skip UMAP:
+python DualRepresentation_WeightedFusion_Test.py --skip-umap
+
+For custom paths:
+python DualRepresentation_WeightedFusion_Test.py --spectral-root <path_to_Spectral_Sequences/TestSet> --recurrence-root <path_to_Recurrence_Plots/TestSet> --weights-dir <path_to_weights> --output-dir <path_to_results>
+
+10. Terminal output
+The primary performance results printed in the terminal are:
+- Overall accuracy
+- Female accuracy
+- Male accuracy
+- Imprinted-dead accuracy
+
+The script does not print:
+- Macro precision
+- Macro recall
+- Macro F1 score
+- Individual AUC values
+- UMAP input feature shape
+- UMAP embedding shape
+
+The confusion matrix and other runtime information may still be displayed as
+part of the evaluation process.
+
+11. Output files
+By default, evaluation figures are saved in the results directory:
+- DualRepresentationWeightedFusion_ConfusionMatrix.png
+- DualRepresentationWeightedFusion_ROC.png
+- DualRepresentationWeightedFusion_UMAP.png
+
+The ROC curve is still generated even though individual AUC values are not
+printed in the terminal.
+
+The UMAP file is generated only when UMAP is not skipped. UMAP is configured
+with a fixed random state and n_jobs=1 to avoid the parallelism warning associated
+with using a fixed random state.
+
+12. Important note
+This script evaluates predictive performance using the finalized model. It does
+not reproduce the separate network-inference timing protocol reported in the
+manuscript.
