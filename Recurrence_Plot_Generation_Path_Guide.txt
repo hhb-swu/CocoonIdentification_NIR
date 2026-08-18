@@ -1,0 +1,106 @@
+Recurrence-Plot Generation: Path and Data-Structure Guide
+
+1. Purpose
+This script converts the released vector-normalized 1D NIR spectral sequences
+into recurrence plots (RPs). No additional spectral preprocessing is applied.
+
+2. Default source directory
+data/Spectral_Sequences/TestSet
+
+Expected structure:
+
+data/
+└── Spectral_Sequences/
+    └── TestSet/
+        ├── Day1/
+        │   ├── 0/
+        │   ├── 1/
+        │   └── 2/
+        ├── ...
+        └── Day10/
+            ├── 0/
+            ├── 1/
+            └── 2/
+
+Class labels:
+0 = Female cocoon
+1 = Male cocoon
+2 = Imprinted-dead cocoon
+
+3. Default destination root
+data/Recurrence_Plots
+
+The script automatically creates:
+data/Recurrence_Plots/TestSet/
+
+and preserves the complete Day/class directory structure and file names.
+
+Example:
+
+Input:
+data/Spectral_Sequences/TestSet/Day1/0/000001.npy
+
+Output:
+data/Recurrence_Plots/TestSet/Day1/0/000001.npy
+
+Thus, within the TestSet directory, every generated RP preserves the same
+Day/class subdirectory structure and file name as its corresponding 1D spectrum.
+
+4. Input preprocessing
+The released 1D spectral sequences have already been vector-normalized.
+
+The RP-generation script does not repeat vector normalization and does not apply
+any other spectral preprocessing. If NaN or Inf values are detected, the script
+reports an error instead of modifying the spectrum.
+
+5. Default RP parameters
+Spectral length: 922
+Embedding dimension: 2
+Delay: 6
+Phase-space length: 916
+Distance matrix and RP size before resizing: 916 x 916
+Min-max scaling range: [0, 1]
+Resize scale: 0.5
+Final RP size: 458 x 458
+Resize interpolation: OpenCV cv2.INTER_AREA
+
+6. Expected test-set distribution
+
+Day1-Day9:
+- Class 0: 36 female cocoon samples per day
+- Class 1: 36 male cocoon samples per day
+- Class 2: 22 imprinted-dead cocoon samples per day
+
+Day10:
+- Class 0: 0 samples
+- Class 1: 0 samples
+- Class 2: 22 imprinted-dead cocoon samples
+
+Total expected input files: 868.
+
+7. Required Python packages
+The RP-generation script requires:
+- numpy
+- opencv-python
+
+8. Running the script
+
+With the default repository structure:
+python Generate_Recurrence_Plots.py
+
+No path editing is required.
+
+For custom paths:
+python Generate_Recurrence_Plots.py --source <path_to_Spectral_Sequences/TestSet> --destination-root <path_to_Recurrence_Plots>
+
+Important:
+- --source must point directly to the TestSet folder containing Day1-Day10.
+- --destination-root must point to the Recurrence_Plots root directory.
+- The script automatically appends the source split name (normally TestSet).
+
+9. Output behavior
+Existing output files with the same names are overwritten by np.save. If the
+destination already contains RP files, back them up first when necessary.
+
+After conversion, the script prints per-day class counts, overall class counts,
+the number of successfully converted files, and any failed files.
