@@ -1,0 +1,35 @@
+Spectral Test Set Description
+
+This folder contains spectral data for the final test set.
+
+Directory structure:
+TestSet/
+├── Day1/
+├── Day2/
+├── Day3/
+├── Day4/
+├── Day5/
+├── Day6/
+├── Day7/
+├── Day8/
+├── Day9/
+└── Day10/
+
+Class labels:
+0 = Female cocoon
+1 = Male cocoon
+2 = Imprinted-dead cocoon
+
+Sample distribution:
+- Day1 to Day9: class 0 contains 36 female-cocoon samples per day.
+- Day1 to Day9: class 1 contains 36 male-cocoon samples per day.
+- Day1 to Day10: class 2 contains 22 imprinted-dead-cocoon samples per day.
+
+Total number of samples:
+- Female cocoons: 324 samples (36 samples/day × 9 days)
+- Male cocoons: 324 samples (36 samples/day × 9 days)
+- Imprinted-dead cocoons: 220 samples (22 samples/day × 10 days)
+
+Total test-set size: 868 samples.
+
+The same class-label encoding is used consistently throughout the dataset.
